@@ -3,6 +3,7 @@
 #include<vector>
 #include<queue>
 #include<algorithm>
+#include<cmath>
 
 using namespace std;
 
@@ -148,7 +149,63 @@ void Heap_Sort(vector<int> &vec, int n){
 	} 
 }
  
-//
+// 计数排序
+void Count_Sort(vector<int> &vec, vector<int> &tmp_out){
+	//1 找到最大的数，确定过渡数组
+	int max = *max_element(vec.begin(), vec.end());
+	vector<int> tmp1(max+1, 0); // 用来记录元素的个数 
+	vector<int> tmp2(max+1, 0); // 用来记录元素的位置
+	// 2 记录元素的个数 
+	for(int i=0; i<vec.size(); i++){
+		tmp1[vec[i]]++;
+	} 
+	// 3 通过累计确定元素的位置 
+	int sum=0;
+	for(int i=0; i<tmp1.size(); i++){
+		sum +=tmp1[i];
+		tmp2[i]=sum;
+	}
+	// 4 根据位置得到排序后的数组 
+	for(int i=0; i<vec.size(); i++){
+		int pos = tmp2[vec[i]];
+		tmp_out[pos-1] = vec[i];
+		tmp2[vec[i]]--;
+	}
+} 
+
+// 基数排序
+void Redix_Sort(vector<int> &vec){
+	// 1 找到最大的元素
+	int n = *max_element(vec.begin(), vec.end());
+	// 2 确定最大元素的位数 
+	int k = 0;
+	while(n!=0){
+		n = n/10;
+		k++;
+	}
+	// 确定需要进行k次装取, 装取的容器是一个管理10个队列的数组
+	queue<int> que;
+	vector<queue<int>> vec_que(10, que);
+	
+	for(int i=0; i<k; i++){
+		//先装
+		for(int j = 0; j< vec.size(); j++){
+			int tmp1 = pow(10, i);
+			int tmp2 = (vec[j]/tmp1)%10;
+			vec_que[tmp2].push(vec[j]);
+		}
+		vec.clear();
+		//后取 
+		for(int j=0; j<10; j++){
+			while(!vec_que[j].empty()){
+				vec.emplace_back(vec_que[j].front());
+				vec_que[j].pop();
+			}
+		}
+	} 
+	 
+} 
+
 
 //遍历打印
 void printval(int val){
@@ -171,21 +228,35 @@ int main(){
 //	Insert_Sort(vec);
 //	for_each(vec.begin(), vec.end(), printval);
 	
+	// 希尔排序 
 //	Shell_Sort(vec, 4);
 //	for_each(vec.begin(), vec.end(), printval);
-
+	
+	// 快排 
 //	Quick_Sort(vec, 0, vec.size()-1);
 //	for_each(vec.begin(), vec.end(), printval);
 
+    // 选择排序 
 //	Insertion_Sort(vec);
 //    for_each(vec.begin(), vec.end(), printval);
 
+	// 归并排序 
 //	vector<int> tmp(vec.size(), 0);
 //	Merga_Sort(vec, tmp, 0, vec.size()-1);
 //	for_each(vec.begin(), vec.end(), printval);
 
+	// 堆排序 
 //	Heap_Sort(vec, vec.size());
 //	for_each(vec.begin(), vec.end(), printval);
+
+//  计数排序 
+//	vector<int> result(vec.begin(),vec.end());
+//	Count_Sort(vec, result);
+//	for_each(result.begin(), result.end(), printval);
+	
+	// 基数排序
+	Redix_Sort(vec);
+	for_each(vec.begin(), vec.end(), printval);
 	
 	return 0;
 }
